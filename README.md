@@ -19,6 +19,10 @@ Then open **http://localhost:8000** in your browser.
 | Student 01 | `student01` | `Athena2025!` | Force password change on first login |
 | Student 02–20 | `student02`–`student20` | `Athena2025!` | Force password change on first login |
 
+## Demo Showcase
+
+[![Watch the demo](https://www.youtube.com/watch?v=nFeZoGw_V9E)]
+
 ## Stack
 
 - **FastAPI** (async Python) — auto-validation, OpenAPI, fastest Python web framework
