@@ -21,7 +21,7 @@ Then open **http://localhost:8000** in your browser.
 
 ## Demo Showcase
 
-[![Watch the demo](https://www.youtube.com/watch?v=nFeZoGw_V9E)]
+[![Watch the demo](https://img.youtube.com/vi/nFeZoGw_V9E/0.jpg)](https://www.youtube.com/watch?v=nFeZoGw_V9E)
 
 ## Stack
 
