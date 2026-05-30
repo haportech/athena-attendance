@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Attendance History{% endblock %}
+{% block page_title %}Attendance History{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card__body">
+        <form method="GET" action="/teacher/history" class="grid-2">
+            <div class="form-group">
+                <label class="form-label" for="student">Filter by Student</label>
+                <select name="student" id="student" class="form-select">
+                    <option value="">All Students</option>
+                    {% for s in students %}
+                    <option value="{{ s.student_id }}" {% if filter_student == s.student_id %}selected{% endif %}>{{ s.student_id }} — {{ s.display_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="status_filter">Filter by Status</label>
+                <select name="status_filter" id="status_filter" class="form-select">
+                    <option value="">All Status</option>
+                    <option value="present" {% if filter_status == 'present' %}selected{% endif %}>Present</option>
+                    <option value="late" {% if filter_status == 'late' %}selected{% endif %}>Late</option>
+                    <option value="absent" {% if filter_status == 'absent' %}selected{% endif %}>Absent</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="date_from">Date From</label>
+                <input type="date" id="date_from" name="date_from" class="form-input" value="{{ filter_date_from or '' }}">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="date_to">Date To</label>
+                <input type="date" id="date_to" name="date_to" class="form-input" value="{{ filter_date_to or '' }}">
+            </div>
+            <div style="display: flex; align-items: end; gap: 0.5rem;">
+                <button type="submit" class="btn btn-primary">Filter</button>
+                <a href="/teacher/history" class="btn btn-secondary">Clear</a>
+                <a href="/teacher/export/csv" class="btn btn-secondary">Export CSV</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card__header">
+        <h3>Attendance Records</h3>
+        <span class="text-sm text-muted">{{ attendance_data|length }} records</span>
+    </div>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Session</th>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Check-in Time</th>
+                    <th>IP Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in attendance_data %}
+                <tr>
+                    <td class="text-sm">{{ r.session_date }}</td>
+                    <td>{{ r.session_name }}</td>
+                    <td class="mono text-sm">{{ r.student_id }}</td>
+                    <td>{{ r.display_name }}</td>
+                    <td><span class="status-badge status-badge--{{ r.status }}">{{ r.status|upper }}</span></td>
+                    <td class="text-sm">{{ r.check_in_time[:19] if r.check_in_time and r.check_in_time != '-' else '-' }}</td>
+                    <td class="text-xs text-muted mono">{{ r.ip_address }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                        No records match your filters.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

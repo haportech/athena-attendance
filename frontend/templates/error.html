@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Error {{ code }}{% endblock %}
+{% block page_title %}Error{% endblock %}
+{% block head %}
+<style>.main-content { margin-left: 0 !important; }</style>
+{% endblock %}
+
+{% block content %}
+<div style="display: flex; align-items: center; justify-content: center; min-height: 60vh;">
+    <div style="text-align: center;">
+        <h1 style="font-size: 4rem; font-weight: 800; color: #22C55E; line-height: 1; font-family: 'Fira Code', monospace;">{{ code }}</h1>
+        <p style="font-size: 1.0625rem; color: #94A3B8; margin: 1rem 0 2rem;">{{ message }}</p>
+        <a href="/" class="btn btn-primary">Go Home</a>
+    </div>
+</div>
+{% endblock %}

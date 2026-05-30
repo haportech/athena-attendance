@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Session Detail{% endblock %}
+{% block page_title %}Session Detail{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card__header">
+        <div>
+            <h3>{{ session.session_name }}</h3>
+            <p class="text-sm text-muted mt-2">{{ session.session_date }} · Threshold: {{ session.late_threshold_minutes }} min</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+            {% if session.is_open %}
+            <span class="status-badge status-badge--present-solid">Open</span>
+            <form method="POST" action="/teacher/session/{{ session.id }}/close" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-sm">Close</button>
+            </form>
+            {% else %}
+            <span class="status-badge status-badge--absent-solid">Closed</span>
+            <form method="POST" action="/teacher/session/{{ session.id }}/open" style="display:inline;">
+                <button type="submit" class="btn btn-primary btn-sm">Re-open</button>
+            </form>
+            {% endif %}
+            <a href="/teacher/export/csv?session_id={{ session.id }}" class="btn btn-secondary btn-sm">CSV</a>
+            <a href="/teacher/export/pdf?session_id={{ session.id }}" class="btn btn-secondary btn-sm">PDF</a>
+        </div>
+    </div>
+    <div class="stats-grid" style="margin: 0; padding: 1rem;">
+        <div class="stat-card"><div class="stat-card__label">Present</div><div class="stat-card__value present">{{ stats.present }}</div></div>
+        <div class="stat-card"><div class="stat-card__label">Late</div><div class="stat-card__value late">{{ stats.late }}</div></div>
+        <div class="stat-card"><div class="stat-card__label">Absent</div><div class="stat-card__value absent">{{ stats.absent }}</div></div>
+        <div class="stat-card"><div class="stat-card__label">Checked In</div><div class="stat-card__value" style="color: var(--color-accent);">{{ stats.checked_in }} / {{ stats.total }}</div></div>
+    </div>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Check-in Time</th>
+                    <th>IP Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in attendance %}
+                <tr>
+                    <td class="mono">{{ r.student_id }}</td>
+                    <td>{{ r.display_name }}</td>
+                    <td><span class="status-badge status-badge--{{ r.status }}">{{ r.status|upper }}</span></td>
+                    <td class="text-sm">{{ r.check_in_time[:19] if r.check_in_time else '-' }}</td>
+                    <td class="text-xs text-muted mono">{{ r.ip_address }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

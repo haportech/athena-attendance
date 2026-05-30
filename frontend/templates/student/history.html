@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}My Attendance{% endblock %}
+{% block page_title %}My Attendance History{% endblock %}
+
+{% block content %}
+<div class="stats-grid" style="margin-bottom: 1.5rem;">
+    <div class="stat-card">
+        <div class="stat-card__label">Total Sessions</div>
+        <div class="stat-card__value">{{ stats.total }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card__label">Present</div>
+        <div class="stat-card__value present">{{ stats.present }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card__label">Late</div>
+        <div class="stat-card__value late">{{ stats.late }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card__label">Absences</div>
+        <div class="stat-card__value absent">{{ stats.absent }}</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card__header">
+        <h3>Attendance Records</h3>
+        {% if records %}
+        <span class="text-sm text-muted">{{ records|length }} records</span>
+        {% endif %}
+    </div>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Session</th>
+                    <th>Check-in Time</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in records %}
+                <tr>
+                    <td>{{ r.session_date }}</td>
+                    <td>{{ r.session_name }}</td>
+                    <td>{{ r.check_in_time[:19] if r.check_in_time else '-' }}</td>
+                    <td><span class="status-badge status-badge--{{ r.status }}">{{ r.status|upper }}</span></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                        No attendance records yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

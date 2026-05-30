@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block title %}Analytics{% endblock %}
+{% block page_title %}Attendance Analytics{% endblock %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-card__label">Overall Attendance</div>
+        <div class="stat-card__value" style="color: var(--color-accent);">{{ overall_percentage }}%</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card__label">Total Present</div>
+        <div class="stat-card__value present">{{ total_present }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card__label">Total Late</div>
+        <div class="stat-card__value late">{{ total_late }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card__label">Total Absent</div>
+        <div class="stat-card__value absent">{{ total_absent }}</div>
+    </div>
+</div>
+
+<div class="grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+    <!-- Per-Session Trend -->
+    <div class="card">
+        <div class="card__header"><h3>Attendance Trend</h3></div>
+        <div class="card__body">
+            <canvas id="sessionChart" height="250"></canvas>
+        </div>
+    </div>
+
+    <!-- Overall Distribution -->
+    <div class="card">
+        <div class="card__header"><h3>Overall Distribution</h3></div>
+        <div class="card__body" style="display: flex; justify-content: center;">
+            <canvas id="distributionChart" height="250" style="max-width: 300px;"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Per-Student Table -->
+<div class="card">
+    <div class="card__header">
+        <h3>Per-Student Attendance Summary</h3>
+    </div>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Present</th>
+                    <th>Late</th>
+                    <th>Absent</th>
+                    <th>Total</th>
+                    <th>Rate</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in student_stats %}
+                <tr>
+                    <td class="mono text-sm">{{ s.student_id }}</td>
+                    <td>{{ s.display_name }}</td>
+                    <td style="color: #16a34a; font-weight: 600;">{{ s.present }}</td>
+                    <td style="color: var(--color-late); font-weight: 500;">{{ s.late }}</td>
+                    <td style="color: var(--text-muted);">{{ s.absent }}</td>
+                    <td>{{ s.total }}</td>
+                    <td>
+                        <span style="color: {% if s.percentage >= 80 %}var(--color-success){% elif s.percentage >= 60 %}var(--color-late){% else %}var(--color-danger){% endif %}; font-weight: 600;">
+                            {{ s.percentage }}%
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Session trend chart
+    const sessionCtx = document.getElementById('sessionChart');
+    if (sessionCtx) {
+        new Chart(sessionCtx, {
+            type: 'line',
+            data: {
+                labels: [{% for s in session_stats %}'{{ s.session_name }} ({{ s.session_date[:5] }})'{% if not loop.last %},{% endif %}{% endfor %}],
+                datasets: [{
+                    label: 'Present',
+                    data: [{% for s in session_stats %}{{ s.present }}{% if not loop.last %},{% endif %}{% endfor %}],
+                    borderColor: '#22c55e',
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    tension: 0.3,
+                    fill: true,
+                }, {
+                    label: 'Late',
+                    data: [{% for s in session_stats %}{{ s.late }}{% if not loop.last %},{% endif %}{% endfor %}],
+                    borderColor: '#f97316',
+                    backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                    tension: 0.3,
+                    fill: true,
+                }, {
+                    label: 'Absent',
+                    data: [{% for s in session_stats %}{{ s.absent }}{% if not loop.last %},{% endif %}{% endfor %}],
+                    borderColor: '#94a3b8',
+                    backgroundColor: 'rgba(148, 163, 184, 0.1)',
+                    tension: 0.3,
+                    fill: true,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'top' } },
+                scales: {
+                    y: { beginAtZero: true, max: 20, ticks: { stepSize: 5 } }
+                }
+            }
+        });
+    }
+
+    // Distribution pie chart
+    const distCtx = document.getElementById('distributionChart');
+    if (distCtx) {
+        new Chart(distCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Present', 'Late', 'Absent'],
+                datasets: [{
+                    data: [{{ total_present }}, {{ total_late }}, {{ total_absent }}],
+                    backgroundColor: ['#22c55e', '#f97316', '#94a3b8'],
+                    borderWidth: 0,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                },
+                cutout: '65%',
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

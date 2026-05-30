@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Audit Log{% endblock %}
+{% block page_title %}Audit Log{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card__header">
+        <h3>Activity Log</h3>
+        <span class="text-sm text-muted">{{ logs|length }} entries</span>
+    </div>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Time (UTC)</th>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th>Details</th>
+                    <th>IP Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td class="text-xs mono">{{ log.created_at[:19] }}</td>
+                    <td>
+                        <span class="mono text-sm">{{ log.username or '—' }}</span>
+                    </td>
+                    <td>
+                        <span class="status-badge" style="
+                            {% if 'LOGIN_SUCCESS' in log.action %}background: var(--color-success-bg); color: #16a34a;
+                            {% elif 'LOGIN_FAILED' in log.action or 'LOGIN_BLOCKED' in log.action %}background: var(--color-danger-bg); color: #dc2626;
+                            {% elif 'OVERRIDE' in log.action %}background: var(--color-late-bg); color: #ea580c;
+                            {% else %}background: var(--color-accent-bg); color: #0d9488;{% endif %}
+                        ">{{ log.action }}</span>
+                    </td>
+                    <td class="text-sm text-secondary" style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">
+                        {{ log.details[:100] }}{% if log.details|length > 100 %}...{% endif %}
+                    </td>
+                    <td class="text-xs mono text-muted">{{ log.ip_address }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                        No audit log entries yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Manage Students{% endblock %}
+{% block page_title %}Student Management{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card__header">
+        <h3>All Students</h3>
+        <span class="text-sm text-muted">{{ students|length }} / 20 enrolled</span>
+    </div>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Username</th>
+                    <th>Display Name</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in students %}
+                <tr>
+                    <td class="mono">{{ s.student_id }}</td>
+                    <td>{{ s.username }}</td>
+                    <td><strong>{{ s.display_name }}</strong></td>
+                    <td>
+                        {% if s.is_active %}
+                        <span class="status-badge status-badge--present">Active</span>
+                        {% else %}
+                        <span class="status-badge status-badge--absent">Disabled</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-sm text-muted">{{ s.created_at[:10] }}</td>
+                    <td>
+                        <form method="POST" action="/teacher/students/reset-password" style="display: inline;">
+                            <input type="hidden" name="student_id" value="{{ s.student_id }}">
+                            <button type="submit" class="btn btn-ghost btn-sm" onclick="return confirmAction('Reset password for {{ s.display_name }} to Athena2025!?')">Reset PW</button>
+                        </form>
+                        <form method="POST" action="/teacher/students/toggle" style="display: inline;">
+                            <input type="hidden" name="user_id" value="{{ s.id }}">
+                            <button type="submit" class="btn btn-ghost btn-sm">
+                                {% if s.is_active %}Disable{% else %}Enable{% endif %}
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

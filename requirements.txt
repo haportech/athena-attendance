@@ -1,0 +1,46 @@
+# FastAPI-based Attendance System for Year 11 Athena
+#
+# Stack Decision: FastAPI + Jinja2 + SQLite + AIO (async)
+# - FastAPI: async, auto-validation, OpenAPI docs, fastest Python web framework
+# - Jinja2: server-side rendering (no SPA complexity, direct CSRF, no CORS)
+# - SQLite + aiosqlite: zero-config async DB, perfect for 20-student single-class
+# - Field-level AES-256-GCM via cryptography: DB at-rest encryption
+# - bcrypt: battle-tested password hashing (not scrypt/argon2 for availability on all platforms)
+# - itsdangerous: signed session cookies (server-validated, tamper-proof)
+#
+# Rationale: A SPA (React/Vue) would add 30%+ complexity for zero benefit here.
+# Server-rendered Jinja2 gives faster dev, simpler deployment, better SEO for dashboards,
+# and natural CSRF protection. SQLite over PostgreSQL: no daemon, no config, encrypted at field level,
+# and the data volume (~20 students) will never outgrow SQLite's capabilities.
+
+# Web framework
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+jinja2==3.1.4
+python-multipart==0.0.12
+aiofiles==24.1.0
+
+# Database
+aiosqlite==0.20.0
+
+# Auth & Security
+bcrypt==4.2.0
+itsdangerous==2.2.0
+pyjwt==2.9.0
+passlib==1.7.4
+
+# Encryption (field-level AES-256-GCM for sensitive columns)
+cryptography==43.0.1
+
+# PDF generation
+reportlab==4.2.5
+
+# CSV is stdlib, no extra dep needed
+
+# Dotenv
+python-dotenv==1.0.1
+
+# Testing
+pytest==8.3.3
+httpx==0.27.2
+pytest-asyncio==0.24.0

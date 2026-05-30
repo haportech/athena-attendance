@@ -1,0 +1,25 @@
+# Environment secrets
+.env
+
+# Database
+*.db
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.env/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Pytest cache
+.pytest_cache/
+
+# Uvicorn
+athena_attendance/

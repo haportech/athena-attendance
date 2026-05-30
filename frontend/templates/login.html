@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block page_title %}Login{% endblock %}
+{% block head %}
+<style>
+.content-wrapper { max-width: none !important; padding: 0 !important; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-page">
+    <div class="login-card">
+        <div class="login-card__header">
+            <div class="login-card__logo">✦</div>
+            <h1 class="login-card__title">Welcome to Athena</h1>
+            <p class="login-card__subtitle">Year 11 — Online Attendance System</p>
+        </div>
+
+        <div class="login-card__body">
+            {% if error %}
+            <div class="alert alert--error">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST" action="/login" id="login-form">
+                <div class="role-tabs" role="tablist" aria-label="Select role">
+                    <button type="button" class="role-tab active" data-role="student" onclick="selectRole('student')" role="tab" aria-selected="true">Student</button>
+                    <button type="button" class="role-tab" data-role="teacher" onclick="selectRole('teacher')" role="tab" aria-selected="false">Teacher</button>
+                </div>
+                <input type="hidden" name="role" id="role-input" value="student">
+
+                <div class="form-group">
+                    <label class="form-label" for="username">Username</label>
+                    <input type="text" id="username" name="username" class="form-input" placeholder="student01" required autocomplete="username" autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="password" id="password" name="password" class="form-input" placeholder="Athena2025!" required autocomplete="current-password" style="flex:1;">
+                        <button type="button" class="btn btn-ghost btn-sm" onclick="togglePassword('password', this)" style="flex-shrink:0;">Show</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg" style="width:100%; margin-top: 0.5rem;">
+                    Sign In
+                </button>
+            </form>
+        </div>
+
+        <div class="login-card__footer">
+            Grade 11 Athena · Attendance System v1.0
+        </div>
+    </div>
+</div>
+
+<script>
+function selectRole(role) {
+    document.querySelectorAll('.role-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.role === role);
+        tab.setAttribute('aria-selected', tab.dataset.role === role ? 'true' : 'false');
+    });
+    document.getElementById('role-input').value = role;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Announcements{% endblock %}
+{% block page_title %}Announcements Board{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card__header">
+        <h3>Post New Announcement</h3>
+    </div>
+    <div class="card__body">
+        <form method="POST" action="/teacher/announcements/create">
+            <div class="form-group">
+                <label class="form-label" for="title">Title</label>
+                <input type="text" id="title" name="title" class="form-input" placeholder="e.g. Exam Schedule Change" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="content">Content</label>
+                <textarea id="content" name="content" class="form-textarea" placeholder="Write your announcement..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Post Announcement</button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card__header">
+        <h3>All Announcements</h3>
+        <span class="text-sm text-muted">{{ announcements|length }} total</span>
+    </div>
+    <div class="card__body" style="padding: 0;">
+        {% for a in announcements %}
+        <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-light); {% if loop.last %}border-bottom: none;{% endif %}">
+            <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
+                <div style="flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.375rem;">
+                        <strong style="font-size: 1rem;">{{ a.title }}</strong>
+                        {% if a.is_active %}
+                        <span class="status-badge status-badge--present" style="font-size: 0.625rem;">Active</span>
+                        {% else %}
+                        <span class="status-badge status-badge--absent" style="font-size: 0.625rem;">Hidden</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-sm text-secondary">{{ a.content }}</p>
+                    <div class="text-xs text-muted mt-2">
+                        Posted by {{ a.author_name }} · {{ a.created_at[:19] }}
+                    </div>
+                </div>
+                <form method="POST" action="/teacher/announcements/{{ a.id }}/toggle" style="flex-shrink: 0;">
+                    <button type="submit" class="btn btn-ghost btn-sm">
+                        {% if a.is_active %}Hide{% else %}Show{% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state" style="padding: 3rem;">
+            <div class="empty-state__icon">📢</div>
+            <div class="empty-state__title">No Announcements</div>
+            <div class="empty-state__text">Post your first announcement above.</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

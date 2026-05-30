@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard{% endblock %}
+{% block page_title %}My Dashboard{% endblock %}
+
+{% block content %}
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-card__label">Total Sessions</div>
+        <div class="stat-card__value">{{ stats.total }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card__label">Present</div>
+        <div class="stat-card__value present">{{ stats.present }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card__label">Late</div>
+        <div class="stat-card__value late">{{ stats.late }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card__label">Attendance Rate</div>
+        <div class="stat-card__value" style="color: {% if stats.percentage >= 80 %}var(--color-success){% elif stats.percentage >= 60 %}var(--color-late){% else %}var(--color-danger){% endif %}">{{ stats.percentage }}%</div>
+    </div>
+</div>
+
+{% if active_session %}
+<div class="session-banner">
+    <div class="session-banner__content">
+        <div class="session-banner__title">{{ active_session.session_name }}</div>
+        <div class="session-banner__text">
+            Session is active — check in now!
+            {% if active_session.late_threshold_minutes %}
+            · Late after {{ active_session.late_threshold_minutes }} min
+            {% endif %}
+        </div>
+    </div>
+    {% if already_checked_in %}
+    <div>
+        <span class="status-badge status-badge--{{ already_checked_in.status }}">
+            {{ already_checked_in.status|upper }}
+        </span>
+    </div>
+    {% else %}
+    <button class="btn btn-primary btn-lg" onclick="handleCheckIn(this)" aria-label="Check in for current session">
+        Check In Now
+    </button>
+    {% endif %}
+</div>
+{% else %}
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card__body">
+        <div class="empty-state">
+            <div class="empty-state__icon">📋</div>
+            <div class="empty-state__title">No Active Session</div>
+            <div class="empty-state__text">Waiting for your teacher to open a session.</div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if announcements %}
+<div class="card">
+    <div class="card__header">
+        <h3>Announcements</h3>
+    </div>
+    <div class="card__body" style="padding: 0;">
+        {% for a in announcements %}
+        <div style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-light); {% if loop.last %}border-bottom: none;{% endif %}">
+            <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
+                <div>
+                    <strong style="font-size: 0.9375rem;">{{ a.title }}</strong>
+                    <p class="text-sm text-secondary mt-2">{{ a.content }}</p>
+                </div>
+                <span class="text-xs text-muted" style="white-space: nowrap; flex-shrink: 0;">{{ a.created_at[:10] }}</span>
+            </div>
+            <div class="text-xs text-muted mt-2">Posted by {{ a.author_name }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}
